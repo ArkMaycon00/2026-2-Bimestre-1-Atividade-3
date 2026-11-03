@@ -322,3 +322,4 @@ Através das três abordagens implementadas em TypeScript/Node.js, foi possível
 1. **Memória Compartilhada e Threads (`worker_threads` + `SharedArrayBuffer`):** Oferece velocidade máxima e zero overhead de cópia de dados, porém exige mecanismos cuidadosos de sincronização.
 2. **Troca de Mensagens em IPC Local (`child_process` + `fork`):** Garante isolamento completo entre processos na mesma máquina através de Pipes do SO.
 3. **Sockets de Rede TCP (`net` + Docker):** Proporciona desacoplamento total, permitindo que as tarefas executem em ambientes distribuídos ou contêineres isolados em rede.
+4. **Vídeo no Youtube com testes dos cenários:** [Comunicação entre Threads e Processos em TypeScript](https://youtu.be/refFDneonrk?si=T9M_IlkcsUtRCupU)
