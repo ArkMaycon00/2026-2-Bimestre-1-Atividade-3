@@ -61,7 +61,7 @@ if (isMainThread) {
         console.log("### consumir - iniciado");
         let resultado = 0;
         for (let i = 0; i < TAMANHO_DADOS; i++) {
-          resultado += sharedArray[i];
+          resultado += sharedArray[i] ?? 0;
         }
         console.log(`### resultado -> ${resultado}`);
         console.log("### consumir - terminado");
