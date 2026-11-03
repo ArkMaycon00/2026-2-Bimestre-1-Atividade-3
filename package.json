@@ -1,0 +1,19 @@
+﻿{
+    "devDependencies":  {
+                            "@types/node":  "^26.6.6",
+                            "concurrently":  "^10.0.6",
+                            "tsx":  "^4.23.15",
+                            "typescript":  "^7.0.2",
+                            "wait-on":  "^9.5.1"
+                        },
+    "allowScripts":  {
+                         "esbuild@0.28.2":  true
+                     },
+    "scripts":  {
+                    "cenario1":  "tsx src/typescript/cenario1_threads.ts",
+                    "cenario2":  "tsx src/typescript/cenario2_mesmo_pc.ts",
+                    "check":  "tsc --noEmit",
+                    "build":  "tsc",
+                    "cenario3":  "concurrently -k --success first \"wait-on tcp:localhost:3000 \u0026\u0026 tsx src/typescript/cenario3_cliente.ts\" \"tsx src/typescript/cenario3_servidor.ts\""
+                }
+}
