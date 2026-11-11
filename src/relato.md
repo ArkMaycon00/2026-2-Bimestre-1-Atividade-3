@@ -173,56 +173,44 @@ finalizou (Processo Pai)
 #### Código Comentado (`src/typescript/cenario2_mesmo_pc.ts`):
 
 ```typescript
-import { fork } from "child_process";
+import { fork, ChildProcess } from "child_process";
 
 function getRandomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-if (!process.env.IS_CHILD) {
-  // PROCESSO PAI
-  console.log("iniciou (Processo Pai)");
-
-  // Cria o processo filho isolado e estabelece o canal IPC (Pipe do SO)
-  const child = fork(__filename, [], {
-    env: { ...process.env, IS_CHILD: "true" },
-  });
-
-  const TAMANHO_DADOS = 100;
-  const dados: number[] = [];
-  for (let i = 0; i < TAMANHO_DADOS; i++) {
-    dados.push(getRandomInt(0, 110));
-  }
-
-  console.log("# produzir - iniciado");
-  console.log(
-    `# produzir [${dados.slice(0, 5).join(", ")}... (total: ${TAMANHO_DADOS})]`,
-  );
-  console.log("# produzir - terminado");
-
-  // Transmite o array serializado via Pipe do SO para o processo filho
-  child.send({ tipo: "DADOS", Payload: dados });
-
-  // Escuta a resposta devolvida pelo processo filho
-  child.on("message", (msg: any) => {
-    if (msg.tipo === "RESULTADO") {
-      console.log(`### resultado -> ${msg.payload}`);
-      console.log("finalizou (Processo Pai)");
-      process.exit(0);
-    }
+if (process.argv[2] === "filho") {
+  // Processo Consumidor (Filho)
+  process.on("message", (dados: number[]) => {
+    console.log("### [Filho] consumir - iniciado");
+    console.log(`### [Filho] dados recebidos (tamanho): ${dados.length}`);
+    const resultado = dados.reduce((acc, val) => acc + val, 0);
+    console.log(`### [Filho] resultado -> ${resultado}`);
+    console.log("### [Filho] consumir - terminado");
+    if (process.send) process.send({ status: "sucesso", resultado });
+    process.exit(0);
   });
 } else {
-  // PROCESSO FILHO
-  process.on("message", (msg: any) => {
-    if (msg.tipo === "DADOS") {
-      console.log("### consumir - iniciado");
-      const dados: number[] = msg.Payload;
-      const resultado = dados.reduce((acc, curr) => acc + curr, 0);
-      console.log("### consumir - terminado");
+  // Processo Produtor (Pai)
+  console.log("[Pai] iniciou");
 
-      // Retorna o cálculo para o processo pai através do canal IPC
-      process.send?.({ tipo: "RESULTADO", payload: resultado });
-    }
+  const processoFilho: ChildProcess = fork(__filename, ["filho"]);
+
+  console.log("# [Pai] produzir - iniciado");
+  const dados: number[] = Array.from({ length: 100 }, () =>
+    getRandomInt(0, 110),
+  );
+  console.log("# [Pai] dados produzidos com sucesso.");
+  console.log("# [Pai] enviar dados ao filho via IPC Pipe");
+
+  processoFilho.send(dados);
+
+  processoFilho.on("message", (msg) => {
+    console.log("[Pai] Confirmação recebida do filho:", msg);
+  });
+
+  processoFilho.on("exit", () => {
+    console.log("[Pai] finalizou");
   });
 }
 ```
