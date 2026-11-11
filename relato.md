@@ -135,14 +135,16 @@ npm run cenario2
 
 #### Resultado obtido no terminal:
 ```text
-iniciou (Processo Pai)
-# produzir - iniciado
-# produzir [12, 85, 43, 99, 0... (total: 100)]
-# produzir - terminado
-### consumir - iniciado
-### consumir - terminado
-### resultado -> 5214
-finalizou (Processo Pai)
+[Pai] iniciou
+# [Pai] produzir - iniciado
+# [Pai] dados produzidos com sucesso.
+# [Pai] enviar dados ao filho via IPC Pipe
+### [Filho] consumir - iniciado
+### [Filho] dados recebidos (tamanho): 100
+### [Filho] resultado -> 5267
+### [Filho] consumir - terminado
+[Pai] Confirmação recebida do filho: { status: 'sucesso', resultado: 5267 }
+[Pai] finalizou
 ```
 
 #### Código Comentado (`src/typescript/cenario2_mesmo_pc.ts`):
